@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GPS</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_maps">Maps</string>
+    <string name="drawer_open">AbrirMenu</string>
+    <string name="drawer_close">CerrarMenu</string>
+</resources>
