@@ -65,6 +65,9 @@ class MainActivity : AppCompatActivity() , NavigationView.OnNavigationItemSelect
                 fragment = MapsFragment()
 
             }
+            R.id.Configuracion ->{
+                fragment = Configuracion()
+            }
         }
 
         supportFragmentManager
