@@ -16,6 +16,11 @@
     android:title="@string/configuracion"
     android:icon="@android:drawable/ic_menu_preferences"/>
 
+    <item
+        android:id="@+id/AcercaDe"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="@string/AcercaDe" />
+
 
 
 

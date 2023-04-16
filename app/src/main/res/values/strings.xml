@@ -10,4 +10,5 @@
     <string name="Btn_Guardar">Guardar Texto</string>
     <string name="Texto_Explicacion">Escriba lo que desea poner en el marcador</string>
     <string name="hint_TextoInput">Home</string>
+    <string name="AcercaDe">AcercaDe</string>
 </resources>
