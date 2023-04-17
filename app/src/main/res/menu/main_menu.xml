@@ -11,6 +11,16 @@
         android:title="@string/nav_maps"
         android:icon="@android:drawable/ic_menu_mapmode" />
 
+<item
+    android:id="@+id/Configuracion"
+    android:title="@string/configuracion"
+    android:icon="@android:drawable/ic_menu_preferences"/>
+
+    <item
+        android:id="@+id/AcercaDe"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="@string/AcercaDe" />
+
 
 
 
