@@ -9,6 +9,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
+import cr.ac.menufragment.AcercaDeFragment
 
 class MainActivity : AppCompatActivity() , NavigationView.OnNavigationItemSelectedListener{
 
@@ -67,6 +68,11 @@ class MainActivity : AppCompatActivity() , NavigationView.OnNavigationItemSelect
             }
             R.id.Configuracion ->{
                 fragment = Configuracion()
+            }
+
+            R.id.AcercaDe -> {
+                fragment = AcercaDeFragment()
+
             }
         }
 
