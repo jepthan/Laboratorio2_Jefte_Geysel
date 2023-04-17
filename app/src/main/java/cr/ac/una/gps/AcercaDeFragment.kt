@@ -41,21 +41,25 @@ class AcercaDeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         btnIntegrantes = view.findViewById(R.id.btnIntegrantes)
         //carga el contexto en el que se muestra
-        builder = AlertDialog.Builder(AcercaDeFragment.this)
+        builder = AlertDialog.Builder(requireContext())
+
+        //Titulo
+        builder.setTitle("Integrantes: ")
+
+        //mensaje
+        builder.setMessage("Jefte Hidalgo Elizondo y Geysel Garcia Fuentes")
+
+        //boton salir en el dialog box
+        builder.setNegativeButton("Salir") { dialogInterface, it ->
+            //sale de la app
+            exitProcess(0)
+        }
+
+        //show the box dialog
+        builder.show()
 
         //setOnClick
         btnIntegrantes.setOnClickListener {
-            //Titulo
-            builder.setTitle("Integrantes: ")
-
-            //mensaje
-            builder.setMessage("Jefte Hidalgo Elizondo y Geysel Garcia Fuentes")
-
-            //boton salir en el dialog box
-            builder.setNegativeButton("Salir") { dialogInterface, it ->
-                //sale de la app
-                exitProcess(0)
-            }
 
             //show the box dialog
             builder.show()
