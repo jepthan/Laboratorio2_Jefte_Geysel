@@ -73,6 +73,8 @@ class MapsFragment : Fragment() {
                 // Ubicación obtenida con éxito
                 if (location != null) {
                     val currentLatLng = LatLng(location.latitude, location.longitude)
+                    println("Ubicacion recibida ${location.latitude} ,  ${location.longitude}")
+
                     map.addMarker(MarkerOptions().position(currentLatLng).title(Configuracion.textostatico.toString()))
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
                 }

@@ -71,7 +71,5 @@ class Configuracion : Fragment() {
                 }
             }
     }
-    fun gettextoStatico(): String {
-        return textostatico
-    }
+
 }

@@ -42,8 +42,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         textoblank = view.findViewById(R.id.homeText)
-        println("yeet")
-        textoblank.text = Configuracion().gettextoStatico().toString()
+        textoblank.text = Configuracion.textostatico
     }
 
     companion object {
