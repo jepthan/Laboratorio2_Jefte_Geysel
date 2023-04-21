@@ -1,6 +1,10 @@
 package cr.ac.una.gps
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationRequest
@@ -39,9 +43,9 @@ import java.util.*
 class MapsFragment : Fragment() {
 
     private lateinit var map: GoogleMap
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var btnUbicacion: Button
     private lateinit var ubicacionDao: UbicacionDao
+    private lateinit var locationReceiver: BroadcastReceiver
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,9 +56,18 @@ class MapsFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
+    private val callback = OnMapReadyCallback { googleMap ->
+
+
+        val sydney = LatLng(-34.0, 151.0)
+        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
         ubicacionDao = AppDatabase.getInstance(requireContext()).ubicacionDao()
 
 
@@ -63,49 +76,43 @@ class MapsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync{
-                googleMap ->
-            map = googleMap
-            getLocation()
-        }
-        btnUbicacion = view.findViewById(R.id.btnUbicacion)
-        btnUbicacion.setOnClickListener{
-
-            addlocation()
-        }
-    }
-
-    private fun addlocation(){
-
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 1)
-        } else {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                // Ubicación obtenida con éxito
-                if (location != null) {
-                    val currentLatLng = LatLng(location.latitude, location.longitude)
-                    println("Ubicacion recibida ${location.latitude} ,  ${location.longitude}")
-
-                    map.addMarker(MarkerOptions().position(currentLatLng).title(Configuracion.textostatico.toString()))
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+        mapFragment?.getMapAsync(callback)
+        iniciaServicio()
 
 
+        locationReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val latitud = intent?.getDoubleExtra("latitud", 0.0) ?: 0.0
+                val longitud = intent?.getDoubleExtra("longitud", 0.0) ?: 0.0
+                println(latitud.toString() +"    " +longitud)
 
-
-                    val entity = Ubicacion(
-                        id = null,
-                        latitud = location.latitude,
-                        longitud = location.longitude,
-                        fecha = Date(),
-                        nombre = Configuracion.textostatico
-                    )
-                    insertEntity(entity)
-                }
+                val entity = Ubicacion(
+                    id = null,
+                    latitud = latitud,
+                    longitud = longitud,
+                    fecha = Date(),
+                    nombre = Configuracion.textostatico
+                )
+                insertEntity(entity)
             }
-
         }
 
+        context?.registerReceiver(locationReceiver, IntentFilter("ubicacionActualizada"))
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Registrar el receptor para recibir actualizaciones de ubicación
+        context?.registerReceiver(locationReceiver, IntentFilter("ubicacionActualizada"))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Desregistrar el receptor al pausar el fragmento
+        context?.unregisterReceiver(locationReceiver)
+    }
+
+
 
     private fun insertEntity(entity: Ubicacion) {
         lifecycleScope.launch {
@@ -116,20 +123,14 @@ class MapsFragment : Fragment() {
 
     }
 
-    private fun getLocation() {
+
+
+    private fun iniciaServicio() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 1)
         } else {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                // Ubicación obtenida con éxito
-                if (location != null) {
-                    val currentLatLng = LatLng(location.latitude, location.longitude)
-                    println("Ubicacion recibida ${location.latitude} ,  ${location.longitude}")
-
-                    map.addMarker(MarkerOptions().position(currentLatLng).title(Configuracion.textostatico.toString()))
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-                }
-            }
+            val intent = Intent(context, LocationService::class.java)
+            context?.startService(intent)
 
         }
 
@@ -140,7 +141,9 @@ class MapsFragment : Fragment() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-                    getLocation()
+
+
+                    iniciaServicio()
                 }
             } else {
                 // Permiso denegado, maneja la situación de acuerdo a tus necesidades
