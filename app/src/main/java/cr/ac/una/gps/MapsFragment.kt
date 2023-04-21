@@ -43,10 +43,9 @@ import java.util.*
 class MapsFragment : Fragment() {
 
     private lateinit var map: GoogleMap
-    private lateinit var btnUbicacion: Button
     private lateinit var ubicacionDao: UbicacionDao
     private lateinit var locationReceiver: BroadcastReceiver
-
+    private lateinit var ubicaciones: List<Ubicacion>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,17 +57,43 @@ class MapsFragment : Fragment() {
 
     private val callback = OnMapReadyCallback { googleMap ->
 
+        map = googleMap
 
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
+
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                ubicaciones = ubicacionDao.getAll() as List<Ubicacion>
+
+                withContext(Dispatchers.Main){
+                    ubicaciones.forEach { ubicacion ->
+
+                        val currentLatLng = LatLng(ubicacion.latitud, ubicacion.longitud)
+
+                        map.addMarker(MarkerOptions().position(currentLatLng).title(ubicacion.nombre))
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+
+                    }
+                }
+            }
+        }
+
+
+
+
+
 
     }
 
+    fun AddAllLocations(){
+
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         ubicacionDao = AppDatabase.getInstance(requireContext()).ubicacionDao()
+
 
 
     }
@@ -76,7 +101,11 @@ class MapsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
+        mapFragment?.getMapAsync { googleMap ->
+            map = googleMap
+
+            mapFragment?.getMapAsync(callback)
+        }
         iniciaServicio()
 
 
@@ -86,6 +115,12 @@ class MapsFragment : Fragment() {
                 val longitud = intent?.getDoubleExtra("longitud", 0.0) ?: 0.0
                 println(latitud.toString() +"    " +longitud)
 
+                val currentLatLng = LatLng(latitud, longitud)
+
+                map.addMarker(MarkerOptions().position(currentLatLng).title(Configuracion.textostatico.toString()))
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+
+
                 val entity = Ubicacion(
                     id = null,
                     latitud = latitud,
@@ -94,10 +129,12 @@ class MapsFragment : Fragment() {
                     nombre = Configuracion.textostatico
                 )
                 insertEntity(entity)
+
+
             }
         }
-
         context?.registerReceiver(locationReceiver, IntentFilter("ubicacionActualizada"))
+
     }
 
     override fun onResume() {
@@ -140,9 +177,6 @@ class MapsFragment : Fragment() {
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-
-
                     iniciaServicio()
                 }
             } else {
