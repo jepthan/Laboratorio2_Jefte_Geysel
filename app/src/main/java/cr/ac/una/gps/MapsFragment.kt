@@ -29,9 +29,12 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polygon
+import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.maps.android.PolyUtil
 import cr.ac.una.gps.entity.Ubicacion
 import cr.ac.una.gps.dao.UbicacionDao
 import cr.ac.una.gps.db.AppDatabase
@@ -46,6 +49,7 @@ class MapsFragment : Fragment() {
     private lateinit var ubicacionDao: UbicacionDao
     private lateinit var locationReceiver: BroadcastReceiver
     private lateinit var ubicaciones: List<Ubicacion>
+    private lateinit var polygon: Polygon
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,8 +62,6 @@ class MapsFragment : Fragment() {
     private val callback = OnMapReadyCallback { googleMap ->
 
         map = googleMap
-
-
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
@@ -78,6 +80,7 @@ class MapsFragment : Fragment() {
             }
         }
 
+        polygon = createPolygon()
 
 
 
@@ -85,9 +88,19 @@ class MapsFragment : Fragment() {
 
     }
 
-    fun AddAllLocations(){
+    private fun createPolygon(): Polygon {
+        val polygonOptions = PolygonOptions()
+        polygonOptions.add(LatLng(10.1365823,-84.4464617 ))
+        polygonOptions.add(LatLng(9.6062242,-84.1718035))
+        polygonOptions.add(LatLng(9.8606862,-83.616994 ))
+        polygonOptions.add(LatLng(10.3690164, -83.9960223 ))
+        polygonOptions.add(LatLng(10.1365823, -84.4464617 ))
+        return map.addPolygon(polygonOptions)
 
 
+    }
+    private fun isLocationInsidePolygon(location: LatLng): Boolean {
+        return polygon != null && PolyUtil.containsLocation(location, polygon?.points, true)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +124,7 @@ class MapsFragment : Fragment() {
 
         locationReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
+
                 val latitud = intent?.getDoubleExtra("latitud", 0.0) ?: 0.0
                 val longitud = intent?.getDoubleExtra("longitud", 0.0) ?: 0.0
                 println(latitud.toString() +"    " +longitud)
@@ -118,7 +132,7 @@ class MapsFragment : Fragment() {
                 val currentLatLng = LatLng(latitud, longitud)
 
                 map.addMarker(MarkerOptions().position(currentLatLng).title(Configuracion.textostatico.toString()))
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 8f))
 
 
                 val entity = Ubicacion(
@@ -126,7 +140,8 @@ class MapsFragment : Fragment() {
                     latitud = latitud,
                     longitud = longitud,
                     fecha = Date(),
-                    nombre = Configuracion.textostatico
+                    nombre = Configuracion.textostatico,
+                    inpoly = isLocationInsidePolygon(currentLatLng)
                 )
                 insertEntity(entity)
 
