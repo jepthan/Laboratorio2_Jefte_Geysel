@@ -10,6 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import cr.ac.menufragment.AcercaDeFragment
+import cr.ac.una.gps.entity.Llamada
 
 class MainActivity : AppCompatActivity() , NavigationView.OnNavigationItemSelectedListener{
 
@@ -72,6 +73,10 @@ class MainActivity : AppCompatActivity() , NavigationView.OnNavigationItemSelect
 
             R.id.AcercaDe -> {
                 fragment = AcercaDeFragment()
+
+            }
+            R.id.Llamada-> {
+                fragment = Llamada()
 
             }
         }
