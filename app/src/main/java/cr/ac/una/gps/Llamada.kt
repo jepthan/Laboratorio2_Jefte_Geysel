@@ -41,8 +41,8 @@ class Llamada : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var btn = view.findViewById<Button>(R.id.botonguardar)
-        btn.setOnClickListener {
-            makePhoneCall2()
+        btn.setOnClickListener {view->
+            makePhoneCall2(view)
         }
     }
 
