@@ -62,7 +62,7 @@ class Llamada : Fragment() {
 
     fun makePhoneCall2(){
         val intent = Intent(Intent.ACTION_CALL)
-        val phoneNumber = findViewById<EditText>(R.id.numero).text.toString()
+        val phoneNumber = view?.findViewById<EditText>(R.id.numero)?.text.toString()
         intent.data = Uri.parse("tel:$phoneNumber")
         startActivity(intent)
     }
