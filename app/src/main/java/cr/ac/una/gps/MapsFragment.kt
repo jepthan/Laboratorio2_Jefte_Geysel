@@ -107,8 +107,6 @@ class MapsFragment : Fragment() {
 
         ubicacionDao = AppDatabase.getInstance(requireContext()).ubicacionDao()
 
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
