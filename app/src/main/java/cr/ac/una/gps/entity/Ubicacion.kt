@@ -10,5 +10,5 @@ data class Ubicacion(
     val longitud: Double,
     val fecha: Date,
     val nombre: String,
-    val inpoly: Boolean
+    val inpoly: Boolean?
 )
