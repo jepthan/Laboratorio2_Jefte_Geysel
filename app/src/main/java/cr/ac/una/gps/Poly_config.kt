@@ -63,6 +63,7 @@ class Poly_config : Fragment() {
             withContext(Dispatchers.IO) {
                 puntos = puntoPolyDao.getAll() as List<PuntoPoly>
                 withContext(Dispatchers.Main){
+                    println(puntos.size)
                     val adapter = PuntoPolyAdapter(requireContext(), puntos)
                     listView.adapter = adapter
                 }

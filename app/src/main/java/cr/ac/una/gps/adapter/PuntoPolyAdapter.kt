@@ -20,11 +20,11 @@ class PuntoPolyAdapter(context: Context, PuntosPoly: List<PuntoPoly>) :
 
         val puntoPoly = getItem(position)
 
-        val numero_poly_view = view!!.findViewById<TextView>(R.id.numero_poly)
+        val numeroPolyView = view!!.findViewById<TextView>(R.id.numero_poly)
         val latitudTextView = view.findViewById<TextView>(R.id.latitud)
         val longitudTextView = view.findViewById<TextView>(R.id.longitud)
 
-        numero_poly_view.text = puntoPoly!!.id.toString()
+        numeroPolyView.text = puntoPoly!!.id.toString()
         latitudTextView.text = puntoPoly.latitud.toString()
         longitudTextView.text = puntoPoly.longitud.toString()
 
