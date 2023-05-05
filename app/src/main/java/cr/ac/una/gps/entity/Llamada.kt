@@ -52,12 +52,7 @@ class Llamada : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        botonGuardar= view.findViewById(R.id.botonguardar)
-        numero = view.findViewById(R.id.numero)
-        botonGuardar.setOnClickListener{
-            println(numero.text)
-            textostatico = numero.text.toString()
-        }
+
     }
 
     fun makePhoneCall2(){
