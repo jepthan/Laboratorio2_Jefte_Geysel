@@ -75,8 +75,13 @@ class MainActivity : AppCompatActivity() , NavigationView.OnNavigationItemSelect
                 fragment = AcercaDeFragment()
 
             }
+
             R.id.Llamada-> {
                 fragment = Llamada()
+
+
+            R.id.PolyConfig -> {
+                fragment = Poly_config()
 
             }
         }

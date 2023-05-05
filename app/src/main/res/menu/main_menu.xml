@@ -21,10 +21,17 @@
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="@string/AcercaDe" />
 
+
     <item
         android:id="@+id/Llamada"
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="@string/Llamada" />
+
+<item
+    android:id="@+id/PolyConfig"
+    android:icon="@android:drawable/ic_menu_preferences"
+    android:title="Configuracion de Puntos del poligono"/>
+
 
 
 </group>
