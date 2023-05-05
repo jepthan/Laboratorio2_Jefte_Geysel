@@ -64,6 +64,7 @@ class Llamada : Fragment() {
 
 
     fun makePhoneCall2(view: View) {
+
         val permission = android.Manifest.permission.CALL_PHONE
         if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(permission), 1)
